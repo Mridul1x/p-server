@@ -11,21 +11,39 @@ const createCheckoutSession = async (req, res) => {
       address,
       userId,
       products,
+      paymentMethod,
     } = req.body;
 
-    const newOrder = new Order({
-      amountTotal,
-      amountShipping,
-      status,
-      mobile,
-      address,
-      userId,
-      products,
-    });
+    if (paymentMethod === "cashOnDelivery") {
+      const newOrder = new Order({
+        amountTotal,
+        amountShipping,
+        status,
+        mobile,
+        address,
+        userId,
+        products,
+      });
 
-    const savedOrder = await newOrder.save();
+      const savedOrder = await newOrder.save();
+      res.status(201).json(savedOrder);
+    } else if (paymentMethod === "onlinePayment") {
+      const transactionResponse = await axios.post(
+        `${process.env.BASE_URL}/api/payment/initiate`,
+        {
+          amountTotal,
+          amountShipping,
+          mobile,
+          address,
+          userId,
+          products,
+        }
+      );
 
-    res.status(201).json(savedOrder);
+      res.status(200).json(transactionResponse.data);
+    } else {
+      res.status(400).json({ error: "Invalid payment method" });
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
