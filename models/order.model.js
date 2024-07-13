@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 const orderSchema = new mongoose.Schema({
   amountTotal: { type: mongoose.Types.Decimal128, required: true },
   amountShipping: { type: mongoose.Types.Decimal128, required: true },
