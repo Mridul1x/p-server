@@ -12,7 +12,13 @@ const app = express();
 const SSLCommerzPayment = require("sslcommerz-lts");
 /*Middlewares*/
 app.use(express.json());
-app.use(cors());
+const corsOptions = {
+  origin: "http://localhost:5173", // Your frontend URL
+  credentials: true, // Allow credentials
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  allowedHeaders: "Content-Type, Authorization",
+};
+app.use(cors(corsOptions));
 
 /*Test Api*/
 app.get("/", (req, res) => {
@@ -24,7 +30,7 @@ app.use("/api/orders", checkoutRoutes);
 app.use("/api/payment", paymentRoute);
 
 /*Variables*/
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 5000;
 const uri = process.env.MONGO_URI;
 /*DB connection*/
 mongoose

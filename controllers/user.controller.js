@@ -1,10 +1,14 @@
 const User = require("../models/user.model");
 const { createToken } = require("../helpers/token.helper");
 const { default: mongoose } = require("mongoose");
+const Order = require("../models/order.model");
 
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({}).sort({ createdAt: -1 });
+    const users = await User.find({})
+      .sort({ createdAt: -1 })
+      .populate("orders")
+      .exec();
 
     res.status(200).json(users);
   } catch (error) {
@@ -73,19 +77,19 @@ const getUserOrders = async (req, res) => {
   try {
     const { uid } = req.params;
 
-    const user = await User.findById(uid).populate({
-      path: "orders",
-      populate: {
+    // Find all orders for the user
+    const orders = await Order.find({ userId: uid })
+      .populate({
         path: "products.productId",
         model: "Product",
-      },
-    });
+      })
+      .exec();
 
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
+    if (!orders) {
+      return res.status(404).json({ error: "Orders not found for this user" });
     }
 
-    res.status(200).json(user.orders);
+    res.status(200).json(orders);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
