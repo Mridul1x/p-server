@@ -28,7 +28,7 @@ router.post("/ssl-request", async (req, res) => {
     tran_id: transactionID,
     success_url: `http://localhost:5000/api/payment/success/${transactionID}`,
     fail_url: `http://localhost:5000/api/payment/fail/${transactionID}`,
-    cancel_url: "http://localhost:5000/api/payment/cancel",
+    cancel_url: `http://localhost:5000/api/payment/cancel/${transactionID}`,
     ipn_url: "http://localhost:5000/api/payment/ipn",
     shipping_method: "Courier",
     product_name: "Ecommerce Products",
@@ -120,6 +120,29 @@ router.post("/fail/:transactionID", async (req, res) => {
   } catch (error) {
     console.error("Error updating transaction status:", error);
     res.redirect(`http://localhost:5173/fail/${transactionID}`);
+  }
+});
+
+router.post("/cancel/:transactionID", async (req, res) => {
+  const transactionID = req.params.transactionID;
+  console.log("Payment cancelled for transactionID:", transactionID);
+  try {
+    const result = await Order.updateOne(
+      { transactionID: transactionID },
+      { $set: { status: "cancelled" } }
+    );
+
+    console.log("Transaction update result:", result);
+    if (result.modifiedCount > 0) {
+      console.log("Transaction cancelled, redirecting to cancel page");
+      res.redirect(`http://localhost:5173/cancel/${transactionID}`);
+    } else {
+      console.log("Transaction update failed, redirecting to cancel page");
+      res.redirect(`http://localhost:5173/cancel/${transactionID}`);
+    }
+  } catch (error) {
+    console.error("Error updating transaction status:", error);
+    res.redirect(`http://localhost:5173/cancel/${transactionID}`);
   }
 });
 
