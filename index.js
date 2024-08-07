@@ -30,7 +30,7 @@ app.use("/api/orders", checkoutRoutes);
 app.use("/api/payment", paymentRoute);
 
 /*Variables*/
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5050;
 const uri = process.env.MONGO_URI;
 /*DB connection*/
 mongoose
