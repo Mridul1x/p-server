@@ -79,6 +79,7 @@ const getUserOrders = async (req, res) => {
 
     // Find all orders for the user
     const orders = await Order.find({ userId: uid })
+      .sort({ createdAt: -1 })
       .populate({
         path: "products.productId",
         model: "Product",

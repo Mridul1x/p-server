@@ -39,7 +39,7 @@ const updateOrderStatus = async (req, res) => {
   try {
     const { orderId, status } = req.body;
 
-    if (!["pending", "approved"].includes(status)) {
+    if (!["pending", "approved", "cancelled"].includes(status)) {
       return res.status(400).json({ error: "Invalid order status" });
     }
 
