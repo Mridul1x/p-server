@@ -13,7 +13,7 @@ const SSLCommerzPayment = require("sslcommerz-lts");
 /*Middlewares*/
 app.use(express.json());
 const corsOptions = {
-  origin: "http://localhost:5173", // Your frontend URL
+  origin: "https://p-client-prac.vercel.app", // Your frontend URL
   credentials: true, // Allow credentials
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   allowedHeaders: "Content-Type, Authorization",
