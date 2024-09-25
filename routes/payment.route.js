@@ -26,10 +26,10 @@ router.post("/ssl-request", async (req, res) => {
     total_amount: amountTotal,
     currency: "BDT",
     tran_id: transactionID,
-    success_url: `https://p-server-prac.vercel.app/api/payment/success/${transactionID}`,
-    fail_url: `https://p-server-prac.vercel.app/api/payment/fail/${transactionID}`,
-    cancel_url: `https://p-server-prac.vercel.app/api/payment/cancel/${transactionID}`,
-    ipn_url: "https://p-server-prac.vercel.app/api/payment/ipn",
+    success_url: `http://localhost:5050/api/payment/success/${transactionID}`,
+    fail_url: `http://localhost:5050/api/payment/fail/${transactionID}`,
+    cancel_url: `http://localhost:5050/api/payment/cancel/${transactionID}`,
+    ipn_url: "http://localhost:5050/api/payment/ipn",
     shipping_method: "Courier",
     product_name: "Ecommerce Products",
     product_category: "Ecommerce",
@@ -88,14 +88,14 @@ router.post("/success/:transactionID", async (req, res) => {
     console.log("Transaction update result:", result);
     if (result.modifiedCount > 0) {
       console.log("Transaction approved, redirecting to success page");
-      res.redirect(`https://p-client-prac.vercel.app/success/${transactionID}`);
+      res.redirect(`http://localhost:5173/success/${transactionID}`);
     } else {
       console.log("Transaction update failed, redirecting to fail page");
-      res.redirect(`https://p-client-prac.vercel.app/fail/${transactionID}`);
+      res.redirect(`http://localhost:5173/fail/${transactionID}`);
     }
   } catch (error) {
     console.error("Error updating transaction status:", error);
-    res.redirect(`https://p-client-prac.vercel.app/fail/${transactionID}`);
+    res.redirect(`http://localhost:5173/fail/${transactionID}`);
   }
 });
 
@@ -112,14 +112,14 @@ router.post("/fail/:transactionID", async (req, res) => {
     console.log("Transaction update result:", result);
     if (result.modifiedCount > 0) {
       console.log("Transaction failed, redirecting to fail page");
-      res.redirect(`https://p-client-prac.vercel.app/fail/${transactionID}`);
+      res.redirect(`http://localhost:5173/fail/${transactionID}`);
     } else {
       console.log("Transaction update failed, redirecting to fail page");
-      res.redirect(`https://p-client-prac.vercel.app/fail/${transactionID}`);
+      res.redirect(`http://localhost:5173/fail/${transactionID}`);
     }
   } catch (error) {
     console.error("Error updating transaction status:", error);
-    res.redirect(`https://p-client-prac.vercel.app/fail/${transactionID}`);
+    res.redirect(`http://localhost:5173/fail/${transactionID}`);
   }
 });
 
@@ -135,14 +135,14 @@ router.post("/cancel/:transactionID", async (req, res) => {
     console.log("Transaction update result:", result);
     if (result.modifiedCount > 0) {
       console.log("Transaction cancelled, redirecting to cancel page");
-      res.redirect(`https://p-client-prac.vercel.app/cancel/${transactionID}`);
+      res.redirect(`http://localhost:5173/cancel/${transactionID}`);
     } else {
       console.log("Transaction update failed, redirecting to cancel page");
-      res.redirect(`https://p-client-prac.vercel.app/cancel/${transactionID}`);
+      res.redirect(`http://localhost:5173/cancel/${transactionID}`);
     }
   } catch (error) {
     console.error("Error updating transaction status:", error);
-    res.redirect(`https://p-client-prac.vercel.app/cancel/${transactionID}`);
+    res.redirect(`http://localhost:5173/cancel/${transactionID}`);
   }
 });
 

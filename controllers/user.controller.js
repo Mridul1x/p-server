@@ -96,10 +96,32 @@ const getUserOrders = async (req, res) => {
   }
 };
 
+const updateUser = async (req, res) => {
+  try {
+    const { uid } = req.params;
+    const { name, photoURL } = req.body; // Capture name and photoURL from the body
+
+    if (!mongoose.Types.ObjectId.isValid(uid)) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      uid,
+      { name, photoURL, updatedAt: Date.now() }, // Update both name and photoURL
+      { new: true }
+    );
+
+    res.status(200).json(updatedUser); // Return updated user object
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 module.exports = {
   getAllUsers,
   getAnUser,
   registerUser,
   createUserWithOrder,
   getUserOrders,
+  updateUser,
 };
