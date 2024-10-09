@@ -42,6 +42,7 @@ const createProduct = async (req, res) => {
       price,
       imageUrl,
       category,
+      stock,
       description,
     });
 
@@ -55,7 +56,7 @@ const createProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, price, imageUrl, category, description } = req.body;
+    const { title, price, imageUrl, category, description, stock } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(404).json({ error: "Product not found" });
@@ -63,7 +64,7 @@ const updateProduct = async (req, res) => {
 
     const updatedProduct = await Product.findByIdAndUpdate(
       id,
-      { title, price, imageUrl, category, description },
+      { title, price, imageUrl, category, description, stock },
       { new: true }
     );
 

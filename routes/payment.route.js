@@ -3,6 +3,7 @@ const router = express.Router();
 const Order = require("../models/order.model");
 const User = require("../models/user.model");
 const SSLCommerzPayment = require("sslcommerz-lts");
+const Product = require("../models/product.model");
 
 const store_id = process.env.STORE_ID;
 const store_passwd = process.env.STORE_PASSWORD;
@@ -75,11 +76,54 @@ router.post("/ssl-request", async (req, res) => {
   }
 });
 
+// router.post("/success/:transactionID", async (req, res) => {
+//   const transactionID = req.params.transactionID;
+//   console.log("Received transactionID:", transactionID);
+
+//   try {
+//     const result = await Order.updateOne(
+//       { transactionID: transactionID },
+//       { $set: { status: "approved" } }
+//     );
+
+//     console.log("Transaction update result:", result);
+//     if (result.modifiedCount > 0) {
+//       console.log("Transaction approved, redirecting to success page");
+//       res.redirect(`http://localhost:5173/success/${transactionID}`);
+//     } else {
+//       console.log("Transaction update failed, redirecting to fail page");
+//       res.redirect(`http://localhost:5173/fail/${transactionID}`);
+//     }
+//   } catch (error) {
+//     console.error("Error updating transaction status:", error);
+//     res.redirect(`http://localhost:5173/fail/${transactionID}`);
+//   }
+// });
 router.post("/success/:transactionID", async (req, res) => {
   const transactionID = req.params.transactionID;
   console.log("Received transactionID:", transactionID);
 
   try {
+    const order = await Order.findOne({ transactionID: transactionID });
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    // If the order is already approved, no need to update again
+    if (order.status === "approved") {
+      return res.redirect(`http://localhost:5173/success/${transactionID}`);
+    }
+
+    // Update stock of each product in the order
+    for (let item of order.products) {
+      const product = await Product.findById(item.productId); // Assuming you have a Product model
+      if (product) {
+        product.stock -= item.quantity; // Reduce the stock by the ordered quantity
+        await product.save();
+      }
+    }
+
+    // Update the order status to approved
     const result = await Order.updateOne(
       { transactionID: transactionID },
       { $set: { status: "approved" } }
