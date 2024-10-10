@@ -9,20 +9,26 @@ const {
   createUserWithOrder,
   getUserOrders,
   updateUser,
+  toggleUserRole,
 } = require("../controllers/user.controller");
 const { isAuthenticated } = require("../middlewares/auth.middleware");
 const { isAdmin } = require("../middlewares/admin.middleware");
+const {
+  isAdminOrSuperAdmin,
+} = require("../middlewares/adminORsuperAdmin.middleware");
+const { isSuperAdmin } = require("../middlewares/superAdmin.middleware");
 
 const upload = multer({ storage });
 
 const router = express.Router();
 
-router.get("/", isAuthenticated, isAdmin, getAllUsers);
+router.get("/", isAuthenticated, isAdminOrSuperAdmin, getAllUsers);
 router.get("/:uid", getAnUser);
 router.post("/", registerUser);
 router.put("/:uid/orders", isAuthenticated, createUserWithOrder);
 router.put("/:uid", isAuthenticated, updateUser);
 router.get("/:uid/orders", isAuthenticated, getUserOrders);
+router.put("/:uid/role", isAuthenticated, isSuperAdmin, toggleUserRole);
 
 router.post(
   "/upload",

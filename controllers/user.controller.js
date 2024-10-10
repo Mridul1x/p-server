@@ -116,6 +116,62 @@ const updateUser = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+// const toggleUserRole = async (req, res) => {
+//   try {
+//     const { uid } = req.params;
+
+//     if (!mongoose.Types.ObjectId.isValid(uid)) {
+//       return res.status(404).json({ error: "User not found." });
+//     }
+
+//     const user = await User.findById(uid);
+//     if (!user) {
+//       return res.status(404).json({ error: "User not found." });
+//     }
+
+//     // Toggle between "admin" and "user"
+//     user.role = user.role === "admin" ? "user" : "admin";
+//     user.updatedAt = Date.now();
+//     await user.save();
+
+//     res.status(200).json(user);
+//   } catch (error) {
+//     res.status(400).json({ error: error.message });
+//   }
+// };
+const toggleUserRole = async (req, res) => {
+  try {
+    const { uid } = req.params;
+    const { role } = req.user; // Assuming you're passing the current logged-in user's role
+
+    if (!mongoose.Types.ObjectId.isValid(uid)) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    const user = await User.findById(uid);
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    // Allow only superAdmin to toggle roles
+    if (role !== "superAdmin") {
+      return res.status(403).json({ error: "Unauthorized action." });
+    }
+
+    // Toggle between "admin" and "user" but superAdmin cannot be demoted
+    if (user.role === "superAdmin") {
+      return res.status(403).json({ error: "Cannot change superAdmin role." });
+    }
+
+    user.role = user.role === "admin" ? "user" : "admin";
+    user.updatedAt = Date.now();
+    await user.save();
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 
 module.exports = {
   getAllUsers,
@@ -124,4 +180,5 @@ module.exports = {
   createUserWithOrder,
   getUserOrders,
   updateUser,
+  toggleUserRole,
 };

@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
   photoURL: { type: String },
   role: {
     type: String,
-    enum: ["user", "admin"],
+    enum: ["user", "admin", "superAdmin"],
     default: "user",
     required: true,
   },
