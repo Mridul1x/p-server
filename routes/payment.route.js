@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Order = require("../models/order.model");
+const Coupon = require("../models/cupon.model");
 const User = require("../models/user.model");
 const SSLCommerzPayment = require("sslcommerz-lts");
 const Product = require("../models/product.model");
@@ -18,6 +19,7 @@ router.post("/ssl-request", async (req, res) => {
     products,
     amountShipping,
     paymentMethod,
+    promoCode,
   } = req.body;
   const user = await User.findById(userId);
   if (!user) return res.status(400).json({ error: "User not found" });
@@ -49,7 +51,13 @@ router.post("/ssl-request", async (req, res) => {
     multi_card_name: "mastercard,visacard,amexcard",
     value_a: JSON.stringify(products),
   };
-
+  if (promoCode) {
+    const coupon = await Coupon.findOne({ name: promoCode });
+    if (coupon && coupon.used < coupon.limit) {
+      coupon.used += 1;
+      await coupon.save();
+    }
+  }
   try {
     const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live);
     sslcz.init(postData).then(async (apiResponse) => {

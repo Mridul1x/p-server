@@ -35,7 +35,7 @@ const getAProduct = async (req, res) => {
 // Create a new product
 const createProduct = async (req, res) => {
   try {
-    const { title, price, imageUrl, category, description } = req.body;
+    const { title, price, imageUrl, category, description, stock } = req.body;
 
     const newProduct = new Product({
       title,
@@ -98,10 +98,48 @@ const deleteProduct = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+// Get all categories (unique categories)
+const getAllCategories = async (req, res) => {
+  try {
+    const categories = await Product.distinct("category");
+    res.status(200).json(categories);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const addReview = async (req, res) => {
+  try {
+    const { id } = req.params; // Product ID
+    const { review } = req.body;
+    const { name } = req.user; // Assuming you have the user's name in req.user
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    // Add the review to the product's reviews array
+    product.reviews.push({ user: name, comment: review }); // Assuming your Product model has a 'reviews' array
+    await product.save();
+
+    res.status(201).json({ message: "Review added successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
+  getAllCategories,
   getAllProducts,
   getAProduct,
   createProduct,
   updateProduct,
   deleteProduct,
+  addReview,
 };

@@ -7,6 +7,7 @@ const userRoutes = require("./routes/user.route");
 const productRoutes = require("./routes/product.route");
 const checkoutRoutes = require("./routes/checkout.route");
 const paymentRoute = require("./routes/payment.route");
+const cuponRoute = require("./routes/cupon.route");
 /*Express App*/
 const app = express();
 const SSLCommerzPayment = require("sslcommerz-lts");
@@ -28,6 +29,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", checkoutRoutes);
 app.use("/api/payment", paymentRoute);
+app.use("/api/cupon", cuponRoute);
 
 /*Variables*/
 const port = process.env.PORT || 5050;

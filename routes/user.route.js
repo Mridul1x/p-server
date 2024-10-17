@@ -28,7 +28,7 @@ router.post("/", registerUser);
 router.put("/:uid/orders", isAuthenticated, createUserWithOrder);
 router.put("/:uid", isAuthenticated, updateUser);
 router.get("/:uid/orders", isAuthenticated, getUserOrders);
-router.put("/:uid/role", isAuthenticated, isSuperAdmin, toggleUserRole);
+router.put("/:uid/role", isAuthenticated, isAdminOrSuperAdmin, toggleUserRole);
 
 router.post(
   "/upload",
